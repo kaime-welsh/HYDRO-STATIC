@@ -7,7 +7,7 @@
 #include <mutex>
 #include <print>
 
-namespace Engine {
+namespace Core {
 
 class Log {
 private:
@@ -87,4 +87,4 @@ private:
   }
 };
 
-} // namespace Engine
+} // namespace Core

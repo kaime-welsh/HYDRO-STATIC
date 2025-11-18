@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace Engine {
+namespace Core {
 
 struct NodeHandle {
   uint32_t index = 0;
@@ -12,4 +12,4 @@ struct NodeHandle {
   bool operator==(const NodeHandle &other) const = default;
 };
 
-} // namespace Engine
+} // namespace Core

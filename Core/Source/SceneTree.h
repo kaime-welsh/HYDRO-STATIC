@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Node.hpp"
-#include "NodeHandle.hpp"
+#include "Node.h"
+#include "NodeHandle.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
 
-namespace Engine {
+namespace Core {
 
 class Node;
 
@@ -22,15 +22,12 @@ private:
   std::vector<Node *> _update_list;
 
   NodeHandle _root = {0, 0};
-
-  static SceneTree *_instance;
   SceneTree() = default;
 
 public:
   static SceneTree &Get() {
-    if (!_instance)
-      _instance = new SceneTree();
-    return *_instance;
+    static SceneTree instance;
+    return instance;
   }
 
   Node *GetNode(NodeHandle handle);
@@ -64,5 +61,4 @@ public:
   void Free(NodeHandle handle);
   void RunLoop(float dt);
 };
-
-} // namespace Engine
+} // namespace Core

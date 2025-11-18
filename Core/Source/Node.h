@@ -1,12 +1,12 @@
 #pragma once
 
-#include "Engine/Log.hpp"
-#include "NodeHandle.hpp"
+#include "Log.h"
+#include "NodeHandle.h"
 #include <string>
 #include <string_view>
 #include <vector>
 
-namespace Engine {
+namespace Core {
 
 class SceneTree;
 
@@ -31,4 +31,4 @@ public:
   virtual void Update(float dt) {}
 };
 
-} // namespace Engine
+} // namespace Core

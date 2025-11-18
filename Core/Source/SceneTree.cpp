@@ -1,7 +1,6 @@
-#include "SceneTree.hpp"
+#include "SceneTree.h"
 
-namespace Engine {
-SceneTree *SceneTree::_instance = nullptr;
+namespace Core {
 
 Node *SceneTree::GetNode(NodeHandle handle) {
   if (handle.index >= _nodes.size())
@@ -57,4 +56,4 @@ void SceneTree::RunLoop(float dt) {
     }
   }
 }
-} // namespace Engine
+} // namespace Core
