@@ -11,46 +11,46 @@ namespace Core {
 
 class Log {
 private:
-  static std::mutex log_mutex;
+  static std::mutex s_logMutex;
 
 public:
   Log() = delete;
 
   template <typename... Args>
   static void Trace(std::format_string<Args...> fmt, Args &&...args) {
-    std::lock_guard<std::mutex> lock(log_mutex);
+    std::lock_guard<std::mutex> lock(s_logMutex);
     std::println("[TRACE]: {}", std::format(fmt, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   static void Info(std::format_string<Args...> fmt, Args &&...args) {
-    std::lock_guard<std::mutex> lock(log_mutex);
+    std::lock_guard<std::mutex> lock(s_logMutex);
     std::println("[INFO]: {}", std::format(fmt, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   static void Debug(std::format_string<Args...> fmt, Args &&...args) {
-    std::lock_guard<std::mutex> lock(log_mutex);
+    std::lock_guard<std::mutex> lock(s_logMutex);
     std::println("[DEBUG]: {}", std::format(fmt, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   static void Warning(std::format_string<Args...> fmt, Args &&...args) {
-    std::lock_guard<std::mutex> lock(log_mutex);
+    std::lock_guard<std::mutex> lock(s_logMutex);
     std::println("[WARNING]: {}",
                  std::format(fmt, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   static void Error(std::format_string<Args...> fmt, Args &&...args) {
-    std::lock_guard<std::mutex> lock(log_mutex);
+    std::lock_guard<std::mutex> lock(s_logMutex);
     std::println(stderr, "[ERROR]: {}",
                  std::format(fmt, std::forward<Args>(args)...));
   }
 
   template <typename... Args>
   static void Fatal(std::format_string<Args...> fmt, Args &&...args) {
-    std::lock_guard<std::mutex> lock(log_mutex);
+    std::lock_guard<std::mutex> lock(s_logMutex);
     std::println(stderr, "[FATAL]: {}",
                  std::format(fmt, std::forward<Args>(args)...));
   }

@@ -1,12 +1,28 @@
 #include "SceneTree.h"
+#include "Utils/Log.h"
 
 namespace Core {
 
+SceneTree::SceneTree() {
+  if (s_instance) {
+    throw std::runtime_error("SceneTree instance already exists!");
+  }
+  s_instance = this;
+  m_root = CreateNode("Root");
+  Log::Info("SceneTree instance initialized!");
+}
+
+SceneTree::~SceneTree() {
+  Log::Info("Destroying SceneTree...");
+  Free(m_root);
+  Log::Info("SceneTree destroyed.");
+}
+
 Node *SceneTree::GetNode(NodeHandle handle) {
-  if (handle.index >= _nodes.size())
+  if (handle.index >= m_nodes.size())
     return nullptr;
 
-  auto &slot = _nodes[handle.index];
+  auto &slot = m_nodes[handle.index];
   if (slot.generation != handle.generation)
     return nullptr;
 
@@ -22,8 +38,8 @@ void SceneTree::AddChild(NodeHandle parent_h, NodeHandle child_h) {
     return;
   }
 
-  c_node->_parent = parent_h;
-  p_node->_children.push_back(child_h);
+  c_node->m_parent = parent_h;
+  p_node->m_children.push_back(child_h);
   c_node->Init();
 }
 
@@ -32,26 +48,26 @@ void SceneTree::Free(NodeHandle handle) {
   if (!node)
     return;
 
-  auto children_copy = node->_children;
+  auto children_copy = node->m_children;
   for (NodeHandle child : children_copy) {
     Free(child);
   }
 
-  if (node->_parent.IsValid()) {
-    Node *parent = GetNode(node->_parent);
+  if (node->m_parent.IsValid()) {
+    Node *parent = GetNode(node->m_parent);
     if (parent) {
-      std::erase(parent->_children, handle);
+      std::erase(parent->m_children, handle);
     }
   }
 
-  std::erase(_update_list, node);
-  _nodes[handle.index].node_ptr.reset();
-  _free_indices.push_back(handle.index);
+  std::erase(m_updateList, node);
+  m_nodes[handle.index].node_ptr.reset();
+  m_freeIndices.push_back(handle.index);
 };
 
 void SceneTree::RunLoop(float dt) {
-  for (Node *node : _update_list) {
-    for (Node *node : _update_list) {
+  for (Node *node : m_updateList) {
+    for (Node *node : m_updateList) {
       node->Update(dt);
     }
   }

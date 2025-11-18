@@ -1,6 +1,7 @@
-#include "Log.h"
-#include "NodeHandle.h"
-#include "SceneTree.h"
+#include "App.h"
+#include "ILayer.h"
+#include "Nodes/Node.h"
+#include "Utils/Log.h"
 #include "raylib.h"
 
 class Player : public Core::Node {
@@ -31,38 +32,16 @@ public:
   }
 };
 
+class GameLayer : public Core::ILayer {
+  void OnAttach() override {}
+  void OnDetach() override {}
+
+  void Update() override {}
+  void Render() override {}
+};
+
 int main(void) {
-  Core::Log::InitRaylibLogger();
-  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE |
-                 FLAG_WINDOW_MAXIMIZED);
-  InitWindow(800, 600, "HYDRO-STATIC");
-  SetTargetFPS(500);
-
-  Core::SceneTree &tree = Core::SceneTree::Get();
-  Core::NodeHandle root = tree.CreateNode<Core::Node>("root");
-  Core::NodeHandle player = tree.CreateNode<Player>("Hero");
-
-  tree.AddChild(root, player);
-
-  while (!WindowShouldClose()) {
-    if (IsKeyPressed(KEY_SPACE) && tree.IsInstanceValid(player)) {
-      Core::Log::Info("Space pressed, Freeing Player...");
-      tree.Free(player);
-    } else if (IsKeyPressed(KEY_SPACE) && !tree.IsInstanceValid(player)) {
-      Core::Log::Info("Space pressed, Creating Player...");
-      player = tree.CreateNode<Player>("Hero");
-      tree.AddChild(root, player);
-    }
-
-    BeginDrawing();
-
-    ClearBackground(BLACK);
-    DrawFPS(2, 2);
-    tree.RunLoop(GetFrameTime());
-
-    EndDrawing();
-  }
-
-  CloseWindow();
-  return 0;
+  Core::App app;
+  app.PushLayer<GameLayer>();
+  app.Run();
 }

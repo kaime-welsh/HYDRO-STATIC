@@ -1,14 +1,13 @@
 #pragma once
 
-#include "Node.h"
 #include "NodeHandle.h"
+#include "Nodes/Node.h"
+
 #include <cstdint>
 #include <memory>
 #include <vector>
 
 namespace Core {
-
-class Node;
 
 class SceneTree {
 private:
@@ -17,42 +16,43 @@ private:
     uint32_t generation = 0;
   };
 
-  std::vector<NodeSlot> _nodes;
-  std::vector<uint32_t> _free_indices;
-  std::vector<Node *> _update_list;
+  std::vector<NodeSlot> m_nodes;
+  std::vector<uint32_t> m_freeIndices;
+  std::vector<Node *> m_updateList;
 
-  NodeHandle _root = {0, 0};
-  SceneTree() = default;
+  static SceneTree *s_instance;
+  NodeHandle m_root;
 
 public:
-  static SceneTree &Get() {
-    static SceneTree instance;
-    return instance;
-  }
+  SceneTree();
+  ~SceneTree();
 
+  static SceneTree &Get() { return *s_instance; }
+
+  Node *GetRoot() { return GetNode(m_root); }
   Node *GetNode(NodeHandle handle);
   bool IsInstanceValid(NodeHandle handle) { return GetNode(handle) != nullptr; }
 
   template <typename T = Node> NodeHandle CreateNode(std::string_view name) {
     uint32_t index;
 
-    if (!_free_indices.empty()) {
-      index = _free_indices.back();
-      _free_indices.pop_back();
+    if (!m_freeIndices.empty()) {
+      index = m_freeIndices.back();
+      m_freeIndices.pop_back();
     } else {
-      index = static_cast<uint32_t>(_nodes.size());
-      _nodes.emplace_back();
+      index = static_cast<uint32_t>(m_nodes.size());
+      m_nodes.emplace_back();
     }
 
-    if (_nodes[index].generation == 0)
-      _nodes[index].generation = 1;
+    if (m_nodes[index].generation == 0)
+      m_nodes[index].generation = 1;
     else
-      _nodes[index].generation++;
+      m_nodes[index].generation++;
 
-    _nodes[index].node_ptr = std::make_unique<T>(name);
-    NodeHandle handle = {index, _nodes[index].generation};
-    _nodes[index].node_ptr->_self = handle;
-    _update_list.push_back(_nodes[index].node_ptr.get());
+    m_nodes[index].node_ptr = std::make_unique<T>(name);
+    NodeHandle handle = {index, m_nodes[index].generation};
+    m_nodes[index].node_ptr->m_self = handle;
+    m_updateList.push_back(m_nodes[index].node_ptr.get());
 
     return handle;
   }
