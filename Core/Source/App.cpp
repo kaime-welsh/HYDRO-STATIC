@@ -4,11 +4,14 @@
 #include "ILayer.h"
 #include "SceneTree.h"
 #include "Utils/Log.h"
+#include "raylib.h"
 #include <memory>
 #include <stdexcept>
 #include <utility>
 
 namespace Core {
+App *App::s_instance = nullptr;
+
 App::App() {
   if (s_instance) {
     throw std::runtime_error("Application instance already exists!");
@@ -54,11 +57,18 @@ void App::Run() {
 
   m_isRunning = true;
   while (m_isRunning) {
+    if (WindowShouldClose()) {
+      m_isRunning = false;
+    }
+
     for (auto &layer : m_layerStack) {
       layer->Update();
     }
     for (auto &layer : m_layerStack) {
+      BeginDrawing();
+      ClearBackground(BLACK);
       layer->Render();
+      EndDrawing();
     }
   }
   CloseWindow();

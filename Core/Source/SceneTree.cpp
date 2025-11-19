@@ -2,6 +2,7 @@
 #include "Utils/Log.h"
 
 namespace Core {
+SceneTree *SceneTree::s_instance = nullptr;
 
 SceneTree::SceneTree() {
   if (s_instance) {
