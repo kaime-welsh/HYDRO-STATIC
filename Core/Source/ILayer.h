@@ -7,8 +7,10 @@ class ILayer {
 public:
   virtual ~ILayer() = default;
 
-  virtual void OnAttach() = 0;
-  virtual void OnDetach() = 0;
+  virtual void OnAttach() {}
+  virtual void OnDetach() {}
+  virtual void OnWindowReady() {}
+  virtual void OnWindowClose() {}
 
   virtual void Update() = 0;
   virtual void Render() = 0;

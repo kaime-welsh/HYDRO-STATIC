@@ -12,11 +12,13 @@
 namespace Core {
 App *App::s_instance = nullptr;
 
-App::App() {
+App::App(WindowConfig config) {
   if (s_instance) {
     throw std::runtime_error("Application instance already exists!");
   }
   s_instance = this;
+
+  m_config = config;
 }
 
 App::~App() {
@@ -50,12 +52,15 @@ void App::Run() {
 
   Log::Info("Initializing Renderer..");
   Core::Log::InitRaylibLogger();
-  SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE |
-                 FLAG_WINDOW_MAXIMIZED);
-  InitWindow(800, 600, "HYDRO-STATIC");
+
+  SetConfigFlags(m_config.flags);
+  InitWindow(m_config.width, m_config.height, m_config.title);
   SetTargetFPS(500);
 
   m_isRunning = true;
+  for (auto &layer : m_layerStack) {
+    layer->OnWindowReady();
+  }
   while (m_isRunning) {
     if (WindowShouldClose()) {
       m_isRunning = false;
@@ -70,6 +75,9 @@ void App::Run() {
       layer->Render();
       EndDrawing();
     }
+  }
+  for (auto &layer : m_layerStack) {
+    layer->OnWindowClose();
   }
   CloseWindow();
 }

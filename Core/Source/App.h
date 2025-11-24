@@ -8,11 +8,18 @@ namespace Core {
 class ILayer;
 class SceneTree;
 
+struct WindowConfig {
+  int width;
+  int height;
+  const char *title;
+  int flags;
+};
+
 class App {
 public:
   static App &Get() { return *s_instance; }
 
-  App();
+  App(WindowConfig config);
   ~App();
 
   void PushLayer(std::unique_ptr<ILayer> layer);
@@ -28,6 +35,7 @@ public:
 
 private:
   static App *s_instance;
+  WindowConfig m_config;
   bool m_isRunning = false;
   std::vector<std::unique_ptr<ILayer>> m_layerStack;
 };

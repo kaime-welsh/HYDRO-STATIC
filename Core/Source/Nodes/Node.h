@@ -29,6 +29,7 @@ public:
 
   virtual void Init() { Log::Info("Node {} is ready.", m_name); }
   virtual void Update(float dt) {}
+  virtual void Draw() {}
 };
 
 } // namespace Core

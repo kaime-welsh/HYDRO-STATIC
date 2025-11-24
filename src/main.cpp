@@ -1,20 +1,17 @@
 #include "App.h"
 #include "ILayer.h"
 #include "Nodes/Node.h"
-#include "Utils/Log.h"
 #include "raylib.h"
 
 class Player : public Core::Node {
 public:
-  using Node::Node;
-
   float x = 400.0f;
   float y = 200.0f;
   float speed = 200.0f;
 
-  void Init() override {
-    Core::Log::Info("Player {} has spawned at ({}, {})!", GetName(), x, y);
-  }
+  Player() : Core::Node("Player") {}
+
+  void Init() override {}
 
   void Update(float dt) override {
     if (IsKeyDown(KEY_W))
@@ -27,21 +24,28 @@ public:
       x += speed * dt;
   }
 
-  ~Player() {
-    Core::Log::Warning("Player '{}' is being destroyed!", GetName());
-  }
+  void Draw() override { DrawCircle(x, y, 8.0f, GREEN); }
+
+  ~Player() {}
 };
 
 class GameLayer : public Core::ILayer {
-  void OnAttach() override {}
-  void OnDetach() override {}
+  Player player;
 
-  void Update() override {}
-  void Render() override {}
+  void OnWindowReady() override { MaximizeWindow(); }
+
+  void OnAttach() override {
+    player.x = 400;
+    player.y = 300;
+  }
+
+  void Update() override { player.Update(GetFrameTime()); }
+  void Render() override { player.Draw(); }
 };
 
 int main(void) {
-  Core::App app;
+  Core::App app(Core::WindowConfig{800, 600, "HYDRO-STATIC",
+                                   FLAG_WINDOW_RESIZABLE | FLAG_VSYNC_HINT});
   app.PushLayer<GameLayer>();
   app.Run();
 }
